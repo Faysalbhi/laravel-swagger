@@ -1,0 +1,545 @@
+openapi: 3.0.0
+info:
+  title: Laravel Swagger
+  description: Develop By Laravel Developer.bd.
+  version: 1.0.0
+servers:
+  - url: http://localhost/api/v1
+    description: Local Server
+  - url: https:///api/v1
+    description: Internal staging server for testing
+  - url: https:///api/v1
+    description: Internal user acceptance test server for testing
+paths:
+  /login:
+    post:
+      summary: Returns the authentication token.
+      tags:
+        - "Auth"
+      description: It will return the authentication token with user info.
+      parameters:
+                - in: query
+                  name: phone
+                  schema:
+                      type: string
+                      example: "+8801717566989"
+                  required: true
+                - in: query
+                  name: password
+                  schema:
+                      type: string
+                      example: "my_password"
+                  required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phone:
+                  type: string
+                password:
+                  type:  string
+      responses:
+        "200":    # status code
+          description: "Success Response."
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  status: 
+                    type: string
+                    example: "success"
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: ""
+                  data:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: "Bearer"
+                      token:
+                        type: string
+                        example: "48|DLrHEjjmfbXbYEIaHpVrd7xtQujml1e2dHLAfHMz"
+                      user: 
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 5
+                          phone:
+                            type: string
+                            example: "+8801478456475"
+                          role:
+                            type: string
+                            example: "hospital-admin"
+        "401":    # status code
+          description: "Unauthorized. Response if authentication fails."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralUnauthorizedCode401"
+        "422":    # status code
+          description: "Input Validation Error. Response if submitted data validation fails."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralUnprocessedContentCode422"
+        "500":    # status code
+          description: "Server Error. Response if any internal server error occurs."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralServerErrorCode500"
+  /logout:
+    post:
+      summary: Revoke Tokens.
+      tags:
+        - "Auth"
+      description: It will revoke all tokens of the user.
+      parameters:
+      - in: header
+        name: Authorization
+        schema:
+            type: string
+            example: "Bearer 48|DLrHEjjmfbXbYEIaHpVrd7xtQujml1e2dHLAfHMz"
+        required: true
+      - in: header
+        name: Accept
+        schema:
+          type: string
+          example: "application/json"
+      responses:
+        "200":    # status code
+          description: "Success Response."
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  status: 
+                    type: string
+                    example: "success"
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Your have successfully logged out." 
+        "401":    # status code
+          description: "Unauthorized. Response if authentication fails."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralUnauthorizedCode401"
+        "422":    # status code
+          description: "Input Validation Error. Response if submitted data validation fails."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralUnprocessedContentCode422"
+        "500":    # status code
+          description: "Server Error. Response if any internal server error occurs."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralServerErrorCode500"
+
+  /profile:
+    get:
+      summary: Returns list of Profile.
+      tags:
+        - "Profile"
+      description: It will return the list of hospitals.
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            example: "Bearer 48|DLrHEjjmfbXbYEIaHpVrd7xtQujml1e2dHLAfHMz"
+          required: true
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            example: "application/json"
+      responses:
+        "200":    # status code
+          description: List of the Profile.
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 4
+                      name:
+                        type: string
+                        example: "Good Life Hospital"                    
+                      address:
+                        type: string
+                        example: "Jessica Smith"
+                      phone:
+                        type: string
+                        example: "+8801478456475"
+                      email:
+                        type: string
+                        example: "info@goodlifehospital.com"
+                      created_by:
+                        type: integer
+                        format: int64
+                        example: 5
+                      updated_by:
+                        type: integer
+                        format: int64
+                        example: 10
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: "2022-01-01 00:00:01"   
+                      updated_at:
+                        type: string
+                        format: date-time
+                        example: "2022-02-01 00:00:01"
+                  links:
+                    type: object
+                    properties:
+                      first:
+                        type: string
+                        example: "/hospitals?page=1"  
+                      last:
+                        type: string
+                        example: "/hospitals?page=5"  
+                      prev:
+                        type: string
+                        example: null
+                      next:
+                        type: string
+                        example: "/hospitals?page=2"
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1  
+                      from:
+                        type: integer
+                        example: 1  
+                      last_page:
+                        type: integer
+                        example: 5
+                      links:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type: string
+                              example: null
+                            label:
+                              type: string
+                              example: "&laquo; Previous"
+                            active:
+                              type: boolean
+                              example: false
+                      path: 
+                        type: string
+                        example: "/hospitals"
+                      per_page: 
+                        type: integer
+                        example: 25 
+                      to:
+                        type: integer
+                        example: 1
+                      total:
+                        type: integer
+                        example: 25
+                  status:
+                    type: string
+                    example: success
+                  code:
+                    type: integer
+                    example: 200                
+        "401":    # status code
+          description: "Unauthorized. Response if authentication fails."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralUnauthorizedCode401"
+        "403":    # status code
+          description: "Forbidden. Response if do not have permission to do this task."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralForbiddenCode403"
+        "500":    # status code
+          description: "Server Error. Response if any internal server error occurs."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralServerErrorCode500"
+    post:
+      summary: Add a new Profile.
+      tags:
+        - "Profile"
+      description: Add a new Profile.
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            example: "Bearer 48|DLrHEjjmfbXbYEIaHpVrd7xtQujml1e2dHLAfHMz"
+          required: true
+        - in: header
+          name: Accept
+          schema:
+            type: string
+            example: "application/json"
+        - in: query
+          name: name
+          schema:
+            type: string
+            maximum: 250
+            example: "Better Life Hospital"
+          required: true
+        - in: query
+          name: address
+          schema:
+            type: string
+            example: "Malibag, Dhaka-1217"
+            maximum: 500
+          required: false
+        - in: query
+          name: phone
+          schema:
+            type: string
+            maximum: 50
+            example: "+88017147377991"
+          required: false
+        - in: query
+          name: email
+          schema:
+            type: string
+            example: "info@betterlifehospital.com"
+            maximum: 50
+          required: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                address:
+                  type:  string
+                phone:
+                  type: string
+                email:
+                  type: string
+      responses:
+        "200":    # status code
+          description: "Ok. Response after successfully created."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralCreateOkCode200"
+        "401":    # status code
+          description: "Unauthorized. Response if authentication fails."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralUnauthorizedCode401"
+        "403":    # status code
+          description: "Forbidden. Response if do not have permission to do this task."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralForbiddenCode403"
+        "422":    # status code
+          description: "Input Validation Error. Response if submitted data validation fails."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralUnprocessedContentCode422"
+        "500":    # status code
+          description: "Server Error. Response if creation fails."
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/GeneralDurningCreateServerErrorCode500"
+  
+
+components:
+  schemas:   
+    GeneralListOkCode200:
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        links:
+          type: object
+        meta:
+          type: object
+          properties:
+            current_page:
+              type: integer
+              example: 1  
+            from:
+              type: integer
+              example: 1  
+            last_page:
+              type: integer
+              example: 5
+            links:
+              type: array
+              items:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    example: null
+                  label:
+                    type: string
+                    example: "&laquo; Previous"
+                  active:
+                    type: boolean
+                    example: false
+            path: 
+              type: string
+              example: "/endpoint"
+            per_page: 
+              type: integer
+              example: 25 
+            to:
+              type: integer
+              example: 1
+            total:
+              type: integer
+              example: 25
+        status:
+          type: string
+          example: success
+        code:
+          type: integer
+          example: 200
+    GeneralCreateOkCode200:
+      properties:
+        status: 
+          type: string
+          example: "success"
+        code: 
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "A Message like X has been successfully created."
+        data:
+          type: object
+    GeneralUpdateOkCode200:
+      properties:
+        status: 
+          type: string
+          example: "success"
+        code: 
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "A Message like X has been successfully updated."
+        data:
+          type: object
+    GeneralShowOkCode200:
+      properties:
+        status: 
+          type: string
+          example: "success"
+        code: 
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: ""
+        data:
+          type: object
+    GeneralDeleteOkCode200:
+      properties:
+        status: 
+          type: string
+          example: "success"
+        code: 
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "A Message like X has been successfully deleted."
+        data:
+          type: object
+    GeneralUnauthorizedCode401:
+      properties:
+        message:
+          type: string
+          example: "Unauthenticated"
+        code: 
+          type: integer
+          example: 401
+    GeneralForbiddenCode403:
+      properties:
+        message:
+          type: string
+          example: "This action is unauthorized."
+        code: 
+          type: integer
+          example: 403
+    GeneralUnprocessedContentCode422:
+      properties:
+        message: 
+          type: string
+          example: "The some field is required."
+        errors: 
+          type: object
+        code: 
+          type: integer
+          example: 422
+    GeneralServerErrorCode500:
+      properties:
+        message:
+          type: string
+          example: "Internal Server Error."
+        code: 
+          type: integer
+          example: 500
+    GeneralDurningCreateServerErrorCode500:
+      properties:
+        status: 
+          type: string
+          example: "error"
+        code: 
+          type: integer
+          example: 500
+        message:
+          type: "string"
+          example: "Message like X has not successfully created."
+    GeneralDuringUpdateServerErrorCode500:
+      properties:
+        status: 
+          type: string
+          example: "error"
+        code: 
+          type: integer
+          example: 500
+        message:
+          type: "string"
+          example: "Message like X has not successfully updated."
